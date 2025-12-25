@@ -7,11 +7,8 @@
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 
   <script>
-    // GLIDE SECOND DATASCREEN
-    const GLIDE_NEW_SCREEN =
-      "https://geniuss-app-9vl4.glide.page/dl/64ffb1";
-
-    const REDIRECT_DELAY = 4000;
+    const GLIDE_NEW_SCREEN = "https://geniuss-app-9vl4.glide.page/dl/64ffb1";
+    const REDIRECT_DELAY = 3000;
 
     window.OneSignalDeferred = window.OneSignalDeferred || [];
 
@@ -21,26 +18,19 @@
         notifyButton: { enable: false }
       });
 
-      // 🔍 Check subscription status
-      const permission = Notification.permission;
-      const isSubscribed = OneSignal.User.PushSubscription.optedIn;
-
-      console.log("Permission:", permission);
-      console.log("Subscribed:", isSubscribed);
-
-      // ✅ CONDITION A — already subscribed
-      if (permission === "granted" && isSubscribed) {
-        // Instantly go to Glide new screen
-        window.location.replace(GLIDE_NEW_SCREEN);
+      // CONDITION A — already allowed
+      if (Notification.permission === "granted") {
+        setTimeout(() => {
+          window.location.replace(GLIDE_NEW_SCREEN);
+        }, 500);
       }
     });
 
-    // ✅ CONDITION B — not subscribed
     function enableNotifications() {
-      OneSignalDeferred.push(function () {
-        OneSignal.showSlidedownPrompt();
+      OneSignalDeferred.push(async function (OneSignal) {
+        await OneSignal.Notifications.requestPermission();
 
-        // After Allow OR Block → go to Glide
+        // After Allow OR Block → redirect
         setTimeout(() => {
           window.location.replace(GLIDE_NEW_SCREEN);
         }, REDIRECT_DELAY);
@@ -64,7 +54,7 @@
 <body>
 
   <h2>Enable Notifications</h2>
-  <p>This will appear only once.</p>
+  <p>You will be redirected automatically.</p>
 
   <button onclick="enableNotifications()">Enable Notifications</button>
 
