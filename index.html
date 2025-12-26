@@ -1,62 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Push Setup</title>
+  <meta charset="UTF-8" />
+  <title>Enable Notifications</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- OneSignal SDK -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-
-  <script>
-    const GLIDE_NEW_SCREEN = "https://geniuss-app-9vl4.glide.page/dl/64ffb1";
-    const REDIRECT_DELAY = 3000;
-
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-
-    OneSignalDeferred.push(async function (OneSignal) {
-      await OneSignal.init({
-        appId: "c382aeac-2c24-4112-ab16-99014b21b832",
-        notifyButton: { enable: false }
-      });
-
-      // CONDITION A — already allowed
-      if (Notification.permission === "granted") {
-        setTimeout(() => {
-          window.location.replace(GLIDE_NEW_SCREEN);
-        }, 500);
-      }
-    });
-
-    function enableNotifications() {
-      OneSignalDeferred.push(async function (OneSignal) {
-        await OneSignal.Notifications.requestPermission();
-
-        // After Allow OR Block → redirect
-        setTimeout(() => {
-          window.location.replace(GLIDE_NEW_SCREEN);
-        }, REDIRECT_DELAY);
-      });
-    }
-  </script>
 
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin-top: 80px;
+      padding: 40px;
     }
     button {
-      padding: 14px 22px;
+      padding: 14px 24px;
       font-size: 16px;
       cursor: pointer;
     }
   </style>
 </head>
+
 <body>
 
-  <h2>Enable Notifications</h2>
-  <p>You will be redirected automatically.</p>
+  <h2 id="title">Enable Notifications</h2>
+  <p id="desc">Please allow notifications to stay updated.</p>
 
-  <button onclick="enableNotifications()">Enable Notifications</button>
+  <button id="enableBtn" style="display:none;">Enable Notifications</button>
+
+  <script>
+    const GLIDE_NEW_SCREEN_URL =
+      "https://geniuss-app-9vl4.glide.page/dl/64ffb1";
+
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function (OneSignal) {
+
+      // Initialize OneSignal
+      await OneSignal.init({
+        appId: "c382aeac-2c24-4112-ab16-99014b21b832",
+        allowLocalhostAsSecureOrigin: false
+      });
+
+      // CHECK SUBSCRIPTION STATUS
+      const isSubscribed =
+        await OneSignal.User.PushSubscription.getSubscribed();
+
+      if (isSubscribed === true) {
+        // already subscribed
+        window.location.replace(GLIDE_NEW_SCREEN_URL);
+        return;
+      }
+
+      // not subscribed → show enable button
+      document.getElementById("enableBtn").style.display = "inline-block";
+    });
+
+    // ENABLE BUTTON CLICK
+    document.getElementById("enableBtn").addEventListener("click", async () => {
+      try {
+        await OneSignal.User.PushSubscription.optIn();
+      } catch (e) {
+        console.log("Permission rejected or blocked");
+      }
+
+      // Allow browser to finish permission flow
+      setTimeout(() => {
+        window.location.href = GLIDE_NEW_SCREEN_URL;
+      }, 1000);
+    });
+  </script>
 
 </body>
 </html>
