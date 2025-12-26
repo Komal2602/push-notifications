@@ -1,109 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8" />
   <title>Enable Notifications</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- OneSignal SDK v16 -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      padding-top: 80px;
+      margin-top: 80px;
     }
-
-    h1 {
-      font-size: 26px;
-      margin-bottom: 10px;
-    }
-
-    p {
-      font-size: 16px;
-      color: #555;
-    }
-
     button {
-      margin-top: 30px;
-      padding: 14px 28px;
+      padding: 12px 20px;
       font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      background-color: #4f46e5;
-      color: #fff;
       cursor: pointer;
-      display: none; /* shown only when needed */
-    }
-
-    button:hover {
-      background-color: #4338ca;
     }
   </style>
 </head>
 
 <body>
-
-  <h1>Enable Notifications</h1>
-  <p>Please allow notifications to stay updated.</p>
-
-  <button id="enableBtn" onclick="enableNotifications()">
-    Enable Notifications
-  </button>
+  <h2 id="title">Enable Notifications</h2>
+  <p id="desc">Please allow notifications to stay updated.</p>
+  <button id="btn" style="display:none;">Enable Notifications</button>
 
   <script>
-    /* 🔁 REPLACE THIS WITH YOUR REAL GLIDE NEW SCREEN LINK */
-    const GLIDE_REDIRECT_URL = "https://geniuss-app-9vl4.glide.page/dl/64ffb1";
+    const GLIDE_REDIRECT =
+      "https://geniuss-app-9vl4.glide.page/dl/64ffb1";
 
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function (OneSignal) {
 
       await OneSignal.init({
         appId: "c382aeac-2c24-4112-ab16-99014b21b832",
-        allowLocalhostAsSecureOrigin: true
+
+        // 🔴 REQUIRED for GitHub Pages repo
+        serviceWorkerPath: "/push-notifications/OneSignalSDKWorker.js",
+        serviceWorkerUpdaterPath: "/push-notifications/OneSignalSDKUpdaterWorker.js",
+        serviceWorkerParam: { scope: "/push-notifications/" }
       });
 
-      // ✅ v16 correct permission check
-      const permission = await OneSignal.Notifications.permission;
+      const isSubscribed = await OneSignal.User.PushSubscription.optedIn;
 
-      console.log("Notification permission:", permission);
-
-      /* =================================================
+      /* ===============================
          CONDITION A — Already subscribed
-         ================================================= */
-      if (permission === "granted") {
-        window.location.href = GLIDE_REDIRECT_URL;
+         =============================== */
+      if (isSubscribed) {
+        window.location.replace(GLIDE_REDIRECT);
         return;
       }
 
-      /* =================================================
-         CONDITION C — Blocked
-         ================================================= */
-      if (permission === "denied") {
-        window.location.href = GLIDE_REDIRECT_URL;
-        return;
-      }
+      /* ===============================
+         CONDITION B — Not subscribed
+         =============================== */
+      document.getElementById("btn").style.display = "inline-block";
 
-      /* =================================================
-         CONDITION B — Not subscribed yet
-         ================================================= */
-      if (permission === "default") {
-        document.getElementById("enableBtn").style.display = "inline-block";
-      }
+      document.getElementById("btn").onclick = async () => {
+        try {
+          await OneSignal.User.PushSubscription.optIn();
+        } catch (e) {
+          console.log("User blocked or closed prompt");
+        } finally {
+          // Allow OR Block → go back to Glide
+          window.location.replace(GLIDE_REDIRECT);
+        }
+      };
     });
-
-    async function enableNotifications() {
-      try {
-        await OneSignal.Notifications.requestPermission();
-      } catch (err) {
-        console.log("Permission request error:", err);
-      }
-
-      // ✅ After Allow OR Block → redirect to Glide
-      window.location.href = GLIDE_REDIRECT_URL;
-    }
   </script>
-
 </body>
 </html>
