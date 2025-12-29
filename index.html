@@ -10,6 +10,9 @@
     OneSignal.push(function () {
       OneSignal.init({
         appId: "c382aeac-2c24-4112-ab16-99014b21b832",
+        serviceWorkerPath: "OneSignalSDKWorker.js",
+        serviceWorkerUpdaterPath: "OneSignalSDKUpdaterWorker.js",
+        serviceWorkerParam: { scope: "/push-notifications/" },
         notifyButton: { enable: false }
       });
     });
