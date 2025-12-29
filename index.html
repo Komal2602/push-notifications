@@ -44,9 +44,22 @@
   <h2>Enable Push Notifications</h2>
   <p>Click the button below and allow notifications.</p>
 
-  <button onclick="OneSignal.showSlidedownPrompt()">
-    Enable Notifications
-  </button>
+  <button onclick="enableNotifications()">Enable Notifications</button>
+
+<script>
+function enableNotifications() {
+  OneSignal.Notifications.requestPermission()
+    .then(function(permission) {
+      console.log("Permission:", permission);
+
+      //redirect back to Glide
+      window.location.href = "https://geniuss-app-9vl4.glide.page/dl/64ffb1";
+    })
+    .catch(function(e) {
+      console.error(e);
+    });
+}
+</script>
 
 </body>
 </html>
