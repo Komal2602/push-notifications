@@ -1,72 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Enable Notifications</title>
 
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+  <script>
+    window.OneSignal = window.OneSignal || [];
+    OneSignal.push(function () {
+      OneSignal.init({
+        appId: "YOUR_ONESIGNAL_APP_ID",
+        notifyButton: { enable: false }
+      });
+    });
+  </script>
 
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin-top: 80px;
+      padding-top: 60px;
     }
     button {
+      font-size: 18px;
       padding: 12px 20px;
-      font-size: 16px;
       cursor: pointer;
     }
   </style>
 </head>
-
 <body>
-  <h2 id="title">Enable Notifications</h2>
-  <p id="desc">Please allow notifications to stay updated.</p>
-  <button id="btn" style="display:none;">Enable Notifications</button>
 
-  <script>
-    const GLIDE_REDIRECT =
-      "https://geniuss-app-9vl4.glide.page/dl/64ffb1";
+  <h2>Enable Push Notifications</h2>
+  <p>Click the button below and allow notifications.</p>
 
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function (OneSignal) {
+  <button onclick="OneSignal.showSlidedownPrompt()">
+    Enable Notifications
+  </button>
 
-      await OneSignal.init({
-        appId: "c382aeac-2c24-4112-ab16-99014b21b832",
-
-        // 🔴 REQUIRED for GitHub Pages repo
-        serviceWorkerPath: "OneSignalSDKWorker.js",
-        serviceWorkerUpdaterPath: "OneSignalSDKUpdaterWorker.js",
-        serviceWorkerParam: { scope: "/push-notifications/" }
-      });
-
-      const isSubscribed = await OneSignal.User.PushSubscription.optedIn;
-
-      /* ===============================
-         CONDITION A — Already subscribed
-         =============================== */
-      if (isSubscribed) {
-        window.location.replace(GLIDE_REDIRECT);
-        return;
-      }
-
-      /* ===============================
-         CONDITION B — Not subscribed
-         =============================== */
-      document.getElementById("btn").style.display = "inline-block";
-
-      document.getElementById("btn").onclick = async () => {
-        try {
-          await OneSignal.User.PushSubscription.optIn();
-        } catch (e) {
-          console.log("User blocked or closed prompt");
-        } finally {
-          // Allow OR Block → go back to Glide
-          window.location.replace(GLIDE_REDIRECT);
-        }
-      };
-    });
-  </script>
 </body>
 </html>
