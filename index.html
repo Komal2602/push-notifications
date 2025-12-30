@@ -52,8 +52,22 @@ function enableNotifications() {
 
   OneSignalDeferred.push(async function (OneSignal) {
     try {
-      const permission = await OneSignal.Notifications.requestPermission();
-      console.log("Permission:", permission);
+       const permission = Notification.permission;
+
+          if (permission === "granted") {
+            alert("✅ Notifications are already enabled.");
+          } 
+          else if (permission === "denied") {
+            alert(
+              "❌ Notifications are blocked.\n\n" +
+              "Please enable them from your browser site settings."
+            );
+          } 
+          else {
+            // permission === "default"
+            await OneSignal.Notifications.requestPermission();
+            alert("✅ Your notification preference has been saved.");
+          }
 
       // redirect back to Glide
       window.location.href = "https://geniuss-app-9vl4.glide.page/dl/64ffb1";
