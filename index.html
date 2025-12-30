@@ -48,22 +48,22 @@
 
 <script>
 function enableNotifications() {
-  window.OneSignal = window.OneSignal || [];
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
 
-  OneSignal.push(function () {
-    OneSignal.Notifications.requestPermission()
-      .then(function (permission) {
-        console.log("Permission result:", permission);
+  OneSignalDeferred.push(async function (OneSignal) {
+    try {
+      const permission = await OneSignal.Notifications.requestPermission();
+      console.log("Permission:", permission);
 
-        //  redirect back to Glide
-        window.location.href = "https://geniuss-app-9vl4.glide.page/dl/64ffb1";
-      })
-      .catch(function (err) {
-        console.error("Permission error:", err);
-      });
+      // Optional: redirect back to Glide
+      window.location.href = "https://go.glideapps.com/your-app-link";
+    } catch (e) {
+      console.error("Notification permission error:", e);
+    }
   });
 }
 </script>
+
 
 
 </body>
