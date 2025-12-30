@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Enable Notifications</title>
 
-  <script src="https://cdn.onesignal.com/sdks/OneSignalSDKWorker.js" async=""></script>
+  <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
  <script>
   window.OneSignal = window.OneSignal || [];
 
@@ -73,6 +73,7 @@ alert("✅ Notifications try block");
       window.location.href = "https://geniuss-app-9vl4.glide.page/dl/64ffb1";
     } catch (e) {
       console.error("Notification permission error:", e);
+       alert("Something went wrong. Please refresh and try again.");
     }
   });
 }
