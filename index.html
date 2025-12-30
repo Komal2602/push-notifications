@@ -31,6 +31,15 @@
     function enableNotifications() {
       window.OneSignalDeferred = window.OneSignalDeferred || [];
 
+      OneSignalDeferred.push(function () {
+      OneSignalDeferred.init({
+        appId: "c382aeac-2c24-4112-ab16-99014b21b832",
+        serviceWorkerPath: "OneSignalSDKWorker.js",
+        serviceWorkerUpdaterPath: "OneSignalSDKUpdaterWorker.js",
+        serviceWorkerParam: { scope: "/" }
+      });
+    });
+      
       OneSignalDeferred.push(async function (OneSignal) {
         try {
           const permission = Notification.permission;
