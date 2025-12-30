@@ -49,11 +49,11 @@
 <script>
 function enableNotifications() {
   window.OneSignalDeferred = window.OneSignalDeferred || [];
-
+alert("✅ Notifications Function.");
   OneSignalDeferred.push(async function (OneSignal) {
     try {
        const permission = Notification.permission;
-
+alert("✅ Notifications try block");
           if (permission === "granted") {
             alert("✅ Notifications are already enabled.");
           } 
